@@ -1,356 +1,114 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Serie A Compare</title>
-  <style>
-    :root{
-      --bg:#f6f7fb;
-      --card:#ffffff;
-      --text:#0b1220;
-      --muted:#5a6b82;
-      --border:rgba(12,18,32,.12);
-      --blue:#0b2a6f;   /* feeling Serie A */
-      --gold:#c7a24a;  /* accento sobrio */
-      --shadow: 0 18px 50px rgba(10,22,50,.10);
-      --radius:18px;
-    }
+function buildPrompt(v) {
+  return `SERIE A COMPARE — DATA MODE OBBLIGATORIO
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(1000px 500px at 20% 5%, rgba(11,42,111,.10) 0%, rgba(246,247,251,0) 60%),
-        radial-gradient(900px 480px at 85% 12%, rgba(199,162,74,.12) 0%, rgba(246,247,251,0) 58%),
-        var(--bg);
-    }
-
-    .wrap{
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 28px 16px 44px;
-    }
-
-    .top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:16px;
-      margin-bottom:14px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .badge{
-      width:42px;height:42px;
-      border-radius:12px;
-      background: linear-gradient(135deg, var(--blue), #1446b8);
-      box-shadow: 0 10px 25px rgba(11,42,111,.25);
-      position:relative;
-      overflow:hidden;
-    }
-    .badge:after{
-      content:"";
-      position:absolute;
-      inset:-30% -30%;
-      background: repeating-linear-gradient(135deg, rgba(255,255,255,.22) 0 10px, rgba(255,255,255,0) 10px 20px);
-      transform: rotate(8deg);
-      opacity:.35;
-    }
-
-    h1{
-      margin:0;
-      font-size: 28px;
-      letter-spacing:.2px;
-      line-height:1.1;
-    }
-
-    .subtitle{
-      margin:6px 0 0;
-      color:var(--muted);
-      font-size: 14px;
-    }
-
-    .headline{
-      margin: 10px 0 0;
-      font-weight:800;
-      color: var(--blue);
-      font-size: 18px;
-    }
-
-    .card{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
-
-    .note{
-      margin: 10px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.35;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 16px;
-    }
-    @media (max-width: 700px){
-      .grid{grid-template-columns:1fr}
-    }
-
-    .box{
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
-      background: rgba(11,42,111,.03);
-    }
-
-    .box h3{
-      margin:0 0 10px;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      color: var(--muted);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-
-    .pill{
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--blue);
-      background: rgba(11,42,111,.08);
-      padding: 5px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(11,42,111,.10);
-    }
-
-    label{
-      display:block;
-      margin: 10px 0 6px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    input{
-      width:100%;
-      padding: 12px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #fff;
-      outline:none;
-      font-size: 16px;
-    }
-    input:focus{
-      border-color: rgba(11,42,111,.35);
-      box-shadow: 0 0 0 4px rgba(11,42,111,.10);
-    }
-    input::placeholder{color: rgba(90,107,130,.65);}
-
-    .actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top: 14px;
-      align-items:center;
-    }
-
-    button{
-      border:0;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-weight: 800;
-      cursor:pointer;
-      font-size: 15px;
-    }
-
-    .primary{
-      background: linear-gradient(135deg, var(--blue), #1446b8);
-      color:white;
-      box-shadow: 0 10px 22px rgba(11,42,111,.18);
-    }
-    .primary:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-      box-shadow:none;
-    }
-
-    .secondary{
-      background: white;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .tiny{
-      font-size: 12px;
-      color: rgba(90,107,130,.8);
-      margin-top: 10px;
-      line-height: 1.35;
-    }
-
-    .toast{
-      display:none;
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(199,162,74,.10);
-      color: #5b460f;
-      font-size: 13px;
-      font-weight: 650;
-    }
-
-    .footer{
-      margin-top: 14px;
-      font-size: 12px;
-      color: rgba(90,107,130,.85);
-    }
-
-    .accent{
-      color: var(--gold);
-      font-weight: 900;
-    }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="top">
-      <div class="brand">
-        <div class="badge" aria-hidden="true"></div>
-        <div>
-          <h1>Serie A Compare</h1>
-          <div class="subtitle">Poster comparativo stile editoriale • 1080×1080</div>
-          <div class="headline">Confronta i tuoi campioni</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="note">
-        Inserisci <b>nome</b> e <b>squadra</b> per due giocatori.  
-        Poi premi <span class="accent">Apri ChatGPT</span>: si aprirà una nuova scheda con il testo già compilato (dovrai solo premere <b>Invia</b>).
-      </div>
-
-      <div class="grid">
-        <div class="box">
-          <h3>Giocatore 1 <span class="pill">Sinistra</span></h3>
-          <label for="p1name">Nome</label>
-          <input id="p1name" placeholder="Es. Javier Zanetti" autocomplete="off" />
-          <label for="p1team">Squadra</label>
-          <input id="p1team" placeholder="Es. Inter" autocomplete="off" />
-        </div>
-
-        <div class="box">
-          <h3>Giocatore 2 <span class="pill">Destra</span></h3>
-          <label for="p2name">Nome</label>
-          <input id="p2name" placeholder="Es. Paolo Maldini" autocomplete="off" />
-          <label for="p2team">Squadra</label>
-          <input id="p2team" placeholder="Es. Milan" autocomplete="off" />
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="primary" id="btnOpen" onclick="openChat()">Apri ChatGPT</button>
-        <button class="secondary" onclick="copyPrompt()">Copia testo (backup)</button>
-        <button class="secondary" onclick="clearAll()">Reset</button>
-      </div>
-
-      <div id="toast" class="toast"></div>
-
-      <div class="footer">
-        Se il prompt non risultasse già compilato in ChatGPT (dipende dal browser/app), usa <b>Copia testo (backup)</b>.
-      </div>
-    </div>
-  </div>
-
-  <script>
-    function toast(msg) {
-      const el = document.getElementById("toast");
-      el.textContent = msg;
-      el.style.display = "block";
-      setTimeout(() => { el.style.display = "none"; }, 3500);
-    }
-
-    function getVals() {
-      const p1name = document.getElementById('p1name').value.trim();
-      const p1team = document.getElementById('p1team').value.trim();
-      const p2name = document.getElementById('p2name').value.trim();
-      const p2team = document.getElementById('p2team').value.trim();
-      return { p1name, p1team, p2name, p2team };
-    }
-
-    function validate(v) {
-      if (!v.p1name || !v.p1team || !v.p2name || !v.p2team) {
-        toast("Compila tutti i campi 🙂");
-        return false;
-      }
-      return true;
-    }
-
-    // Per ora: prompt “input-only”.
-    // Nel prossimo step lo sostituiamo con il prompt SERIE A COMPARE completo (DATA MODE obbligatorio).
-    function buildPrompt(v) {
-      return `SERIE A COMPARE
-
+━━━━━━━━━━━━━━━━━━━━
+INPUT (NON MODIFICARE ALTRO)
+━━━━━━━━━━━━━━━━━━━━
 PLAYER 1 NAME: ${v.p1name}
 PLAYER 1 TEAM: ${v.p1team}
 
 PLAYER 2 NAME: ${v.p2name}
 PLAYER 2 TEAM: ${v.p2team}
 
-(Usa il prompt SERIE A COMPARE definitivo e genera il poster.)`;
-    }
+━━━━━━━━━━━━━━━━━━━━
+REGOLE GLOBALI (ASSOLUTE)
+━━━━━━━━━━━━━━━━━━━━
+- Tutto il testo visibile DEVE essere in ITALIANO.
+- Usa SOLO dati fattuali e verificabili.
+- Non inventare, non stimare, non interpretare numeri.
+- Se un valore non è 100% certo, scrivi “—”.
+- Questo è un POSTER DI CONFRONTO DATI editoriale, NON una grafica videogame: niente fulmini, niente effetti epici, niente stile FIFA/Marvel.
 
-    function openChat() {
-      const v = getVals();
-      if (!validate(v)) return;
+━━━━━━━━━━━━━━━━━━━━
+DERBY (SOLO SE APPLICABILE)
+━━━━━━━━━━━━━━━━━━━━
+Usa esattamente questi nomi derby quando la coppia di squadre corrisponde:
+- Inter vs Milan → “DERBY DELLA MADONNINA”
+- Inter vs Juventus → “DERBY D’ITALIA”
+- Milan vs Juventus → “CLASSICA DEL CALCIO ITALIANO”
+- Roma vs Lazio → “DERBY DELLA CAPITALE”
+- Torino vs Juventus → “DERBY DELLA MOLE”
+- Genoa vs Sampdoria → “DERBY DELLA LANTERNA”
+- Fiorentina vs Juventus → “DERBY DELL’APPENNINO”
+- Napoli vs Roma → “DERBY DEL SOLE”
+Se non è in lista: NON mostrare alcuna etichetta derby.
 
-      const prompt = buildPrompt(v);
-      const url = "https://chatgpt.com/?q=" + encodeURIComponent(prompt);
-      window.open(url, "_blank");
-    }
+━━━━━━━━━━━━━━━━━━━━
+TROFEI — VERSIONE A (LOCKED)
+━━━━━━━━━━━━━━━━━━━━
+Per “Trofei vinti” includi SOLO:
+- Campionato nazionale
+- Coppa nazionale
+- Supercoppa nazionale
+- Competizioni UEFA ufficiali
+- Coppa Intercontinentale
+- FIFA Club World Cup
+ESCLUDI SEMPRE: giovanili, amichevoli, premi individuali, nazionali, altri club.
 
-    async function copyPrompt() {
-      const v = getVals();
-      if (!validate(v)) return;
+━━━━━━━━━━━━━━━━━━━━
+STATISTICHE (LOCKED)
+━━━━━━━━━━━━━━━━━━━━
+- Presenze = TOTALE presenze con il club indicato (tutte le competizioni ufficiali), valore singolo come su Wikipedia.
+- Gol = TOTALE gol con il club indicato (tutte le competizioni ufficiali), valore singolo come su Wikipedia.
+- Stagioni = numero di stagioni di prima squadra con quel club (calcolo semplice dal periodo AAAA–AAAA se certo; altrimenti “—”).
+- Trofei vinti = numero totale di trofei vinti con quel club, seguendo le regole “TROFEI — VERSIONE A”.
 
-      const prompt = buildPrompt(v);
+━━━━━━━━━━━━━━━━━━━━
+FASE 1 — COSTRUISCI LA TABELLA (TESTO)
+━━━━━━━━━━━━━━━━━━━━
+Prima di qualsiasi descrizione visiva, produci ESATTAMENTE questa tabella con 5 righe.
+Nessun elenco, nessun nome trofeo, nessuna stagione dettagliata.
 
-      try {
-        await navigator.clipboard.writeText(prompt);
-        toast("Testo copiato negli appunti ✅");
-      } catch (e) {
-        const ta = document.createElement("textarea");
-        ta.value = prompt;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
-        toast("Testo copiato (fallback) ✅");
-      }
-    }
+TABELLA DEFINITIVA (LOCKED)
+Periodo
+- PLAYER 1: AAAA–AAAA
+- PLAYER 2: AAAA–AAAA
 
-    function clearAll() {
-      document.getElementById("p1name").value = "";
-      document.getElementById("p1team").value = "";
-      document.getElementById("p2name").value = "";
-      document.getElementById("p2team").value = "";
-      toast("Reset fatto 👍");
-    }
-  </script>
-</body>
-</html>
+Stagioni
+- PLAYER 1: X
+- PLAYER 2: X
+
+Presenze
+- PLAYER 1: X
+- PLAYER 2: X
+
+Gol
+- PLAYER 1: X
+- PLAYER 2: X
+
+Trofei vinti
+- PLAYER 1: X
+- PLAYER 2: X
+
+━━━━━━━━━━━━━━━━━━━━
+VALIDAZIONE AUTOMATICA (DO/WHILE — MAX 2)
+━━━━━━━━━━━━━━━━━━━━
+Controlla che:
+- Ci siano ESATTAMENTE 5 righe (Periodo, Stagioni, Presenze, Gol, Trofei vinti)
+- Periodo in formato AAAA–AAAA
+- Tutti i valori siano un singolo intero o “—”
+- Presenze e Gol siano totali di club (tutte le competizioni)
+- Trofei solo col club indicato
+Se fallisce: rifai 1 volta in modo più conservativo. Se fallisce di nuovo: STOP.
+
+Se passa: BLOCCA i dati e vai alla fase 2.
+
+━━━━━━━━━━━━━━━━━━━━
+FASE 2 — GENERA IL PROMPT IMMAGINE (TESTO)
+━━━━━━━━━━━━━━━━━━━━
+Ora genera un singolo prompt per DALL·E / image generator che:
+- Crea un poster 1080×1080 editoriale, pulito, leggibile.
+- Due mezzi busti: PLAYER 1 a sinistra, PLAYER 2 a destra, entrambi guardano in camera.
+- Maglie storicamente corrette per club ed epoca.
+- Illuminazione coerente con l’epoca (anni 80/90 = luce naturale o soft sunset; evitare notte se pre-2000).
+- Sfondo: colori club + stadio sfocato coerente (NO bandiere nazionali).
+- Mostra i numeri iconici SOLO se certi, altrimenti non forzare.
+- Inserisci una tabella centrale con ESATTAMENTE 5 righe e valori IDENTICI alla tabella bloccata.
+- Tutto il testo visibile in ITALIANO.
+- Nessun dato extra (NO assist, NO “matches” se non richiesto, NO titoli solo Serie A).
+
+OUTPUT FINALE:
+Stampa SOLO:
+1) la TABELLA DEFINITIVA (LOCKED)
+2) il PROMPT IMMAGINE da copiare in DALL·E`;
+}
