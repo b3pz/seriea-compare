@@ -1,114 +1,206 @@
-function buildPrompt(v) {
-  return `SERIE A COMPARE — DATA MODE OBBLIGATORIO
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serie A Compare</title>
 
-━━━━━━━━━━━━━━━━━━━━
-INPUT (NON MODIFICARE ALTRO)
-━━━━━━━━━━━━━━━━━━━━
-PLAYER 1 NAME: ${v.p1name}
-PLAYER 1 TEAM: ${v.p1team}
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #0b1c2d, #111);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-PLAYER 2 NAME: ${v.p2name}
-PLAYER 2 TEAM: ${v.p2team}
+    .card {
+      background: #0f1720;
+      border-radius: 14px;
+      padding: 28px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
 
-━━━━━━━━━━━━━━━━━━━━
-REGOLE GLOBALI (ASSOLUTE)
-━━━━━━━━━━━━━━━━━━━━
-- Tutto il testo visibile DEVE essere in ITALIANO.
-- Usa SOLO dati fattuali e verificabili.
-- Non inventare, non stimare, non interpretare numeri.
-- Se un valore non è 100% certo, scrivi “—”.
-- Questo è un POSTER DI CONFRONTO DATI editoriale, NON una grafica videogame: niente fulmini, niente effetti epici, niente stile FIFA/Marvel.
+    h1 {
+      text-align: center;
+      margin-bottom: 6px;
+      font-size: 30px;
+      letter-spacing: 1px;
+    }
 
-━━━━━━━━━━━━━━━━━━━━
-DERBY (SOLO SE APPLICABILE)
-━━━━━━━━━━━━━━━━━━━━
-Usa esattamente questi nomi derby quando la coppia di squadre corrisponde:
-- Inter vs Milan → “DERBY DELLA MADONNINA”
-- Inter vs Juventus → “DERBY D’ITALIA”
-- Milan vs Juventus → “CLASSICA DEL CALCIO ITALIANO”
-- Roma vs Lazio → “DERBY DELLA CAPITALE”
-- Torino vs Juventus → “DERBY DELLA MOLE”
-- Genoa vs Sampdoria → “DERBY DELLA LANTERNA”
-- Fiorentina vs Juventus → “DERBY DELL’APPENNINO”
-- Napoli vs Roma → “DERBY DEL SOLE”
-Se non è in lista: NON mostrare alcuna etichetta derby.
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #c7d2fe;
+      margin-bottom: 24px;
+    }
 
-━━━━━━━━━━━━━━━━━━━━
-TROFEI — VERSIONE A (LOCKED)
-━━━━━━━━━━━━━━━━━━━━
-Per “Trofei vinti” includi SOLO:
-- Campionato nazionale
-- Coppa nazionale
-- Supercoppa nazionale
-- Competizioni UEFA ufficiali
-- Coppa Intercontinentale
-- FIFA Club World Cup
-ESCLUDI SEMPRE: giovanili, amichevoli, premi individuali, nazionali, altri club.
+    label {
+      display: block;
+      margin-top: 14px;
+      font-size: 13px;
+      opacity: 0.9;
+    }
 
-━━━━━━━━━━━━━━━━━━━━
-STATISTICHE (LOCKED)
-━━━━━━━━━━━━━━━━━━━━
-- Presenze = TOTALE presenze con il club indicato (tutte le competizioni ufficiali), valore singolo come su Wikipedia.
-- Gol = TOTALE gol con il club indicato (tutte le competizioni ufficiali), valore singolo come su Wikipedia.
-- Stagioni = numero di stagioni di prima squadra con quel club (calcolo semplice dal periodo AAAA–AAAA se certo; altrimenti “—”).
-- Trofei vinti = numero totale di trofei vinti con quel club, seguendo le regole “TROFEI — VERSIONE A”.
+    input {
+      width: 100%;
+      margin-top: 6px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 15px;
+    }
 
-━━━━━━━━━━━━━━━━━━━━
-FASE 1 — COSTRUISCI LA TABELLA (TESTO)
-━━━━━━━━━━━━━━━━━━━━
-Prima di qualsiasi descrizione visiva, produci ESATTAMENTE questa tabella con 5 righe.
-Nessun elenco, nessun nome trofeo, nessuna stagione dettagliata.
+    .buttons {
+      margin-top: 22px;
+      display: flex;
+      gap: 10px;
+    }
 
-TABELLA DEFINITIVA (LOCKED)
-Periodo
-- PLAYER 1: AAAA–AAAA
-- PLAYER 2: AAAA–AAAA
+    button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    }
 
-Stagioni
-- PLAYER 1: X
-- PLAYER 2: X
+    .primary {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #111;
+    }
 
-Presenze
-- PLAYER 1: X
-- PLAYER 2: X
+    .secondary {
+      background: #1f2937;
+      color: #fff;
+    }
 
-Gol
-- PLAYER 1: X
-- PLAYER 2: X
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111827;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      display: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
 
-Trofei vinti
-- PLAYER 1: X
-- PLAYER 2: X
+<body>
 
-━━━━━━━━━━━━━━━━━━━━
-VALIDAZIONE AUTOMATICA (DO/WHILE — MAX 2)
-━━━━━━━━━━━━━━━━━━━━
-Controlla che:
-- Ci siano ESATTAMENTE 5 righe (Periodo, Stagioni, Presenze, Gol, Trofei vinti)
-- Periodo in formato AAAA–AAAA
-- Tutti i valori siano un singolo intero o “—”
-- Presenze e Gol siano totali di club (tutte le competizioni)
-- Trofei solo col club indicato
-Se fallisce: rifai 1 volta in modo più conservativo. Se fallisce di nuovo: STOP.
+  <div class="card">
+    <h1>SERIE A COMPARE</h1>
+    <div class="subtitle">Confronta i tuoi campioni</div>
 
-Se passa: BLOCCA i dati e vai alla fase 2.
+    <label>Giocatore 1</label>
+    <input id="p1name" placeholder="Es. Zanetti" />
 
-━━━━━━━━━━━━━━━━━━━━
-FASE 2 — GENERA IL PROMPT IMMAGINE (TESTO)
-━━━━━━━━━━━━━━━━━━━━
-Ora genera un singolo prompt per DALL·E / image generator che:
-- Crea un poster 1080×1080 editoriale, pulito, leggibile.
-- Due mezzi busti: PLAYER 1 a sinistra, PLAYER 2 a destra, entrambi guardano in camera.
-- Maglie storicamente corrette per club ed epoca.
-- Illuminazione coerente con l’epoca (anni 80/90 = luce naturale o soft sunset; evitare notte se pre-2000).
-- Sfondo: colori club + stadio sfocato coerente (NO bandiere nazionali).
-- Mostra i numeri iconici SOLO se certi, altrimenti non forzare.
-- Inserisci una tabella centrale con ESATTAMENTE 5 righe e valori IDENTICI alla tabella bloccata.
-- Tutto il testo visibile in ITALIANO.
-- Nessun dato extra (NO assist, NO “matches” se non richiesto, NO titoli solo Serie A).
+    <label>Squadra 1</label>
+    <input id="p1team" placeholder="Es. Inter" />
 
-OUTPUT FINALE:
-Stampa SOLO:
-1) la TABELLA DEFINITIVA (LOCKED)
-2) il PROMPT IMMAGINE da copiare in DALL·E`;
-}
+    <label>Giocatore 2</label>
+    <input id="p2name" placeholder="Es. Maldini" />
+
+    <label>Squadra 2</label>
+    <input id="p2team" placeholder="Es. Milan" />
+
+    <div class="buttons">
+      <button class="primary" onclick="openChat()">Apri ChatGPT</button>
+      <button class="secondary" onclick="copyPrompt()">Copia prompt</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function toast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.style.display = "block";
+      setTimeout(() => { el.style.display = "none"; }, 3500);
+    }
+
+    function getVals() {
+      return {
+        p1name: document.getElementById("p1name").value.trim(),
+        p1team: document.getElementById("p1team").value.trim(),
+        p2name: document.getElementById("p2name").value.trim(),
+        p2team: document.getElementById("p2team").value.trim()
+      };
+    }
+
+    function validate(v) {
+      if (!v.p1name || !v.p1team || !v.p2name || !v.p2team) {
+        toast("Compila tutti i campi");
+        return false;
+      }
+      return true;
+    }
+
+    function buildPrompt(v) {
+      return (
+        "SERIE A COMPARE — DATA MODE OBBLIGATORIO\n\n" +
+
+        "PLAYER 1 NAME: " + v.p1name + "\n" +
+        "PLAYER 1 TEAM: " + v.p1team + "\n\n" +
+
+        "PLAYER 2 NAME: " + v.p2name + "\n" +
+        "PLAYER 2 TEAM: " + v.p2team + "\n\n" +
+
+        "REGOLE ASSOLUTE\n" +
+        "- Tutto il testo visibile DEVE essere in ITALIANO.\n" +
+        "- Usa SOLO dati verificabili.\n" +
+        "- Non inventare numeri.\n" +
+        "- Se un valore non è certo, scrivi --.\n" +
+        "- Grafica editoriale, NON stile videogame.\n\n" +
+
+        "TABELLA OBBLIGATORIA (5 RIGHE)\n" +
+        "Periodo: AAAA-AAAA | AAAA-AAAA\n" +
+        "Stagioni: X | X\n" +
+        "Presenze totali club: X | X\n" +
+        "Gol totali club: X | X\n" +
+        "Trofei vinti (solo col club): X | X\n\n" +
+
+        "Dopo la tabella, genera il prompt immagine 1080x1080 con tabella identica."
+      );
+    }
+
+    async function openChat() {
+      const v = getVals();
+      if (!validate(v)) return;
+
+      const prompt = buildPrompt(v);
+
+      try {
+        await navigator.clipboard.writeText(prompt);
+        toast("Prompt copiato. Si apre ChatGPT.");
+      } catch {
+        toast("Errore copia appunti");
+        return;
+      }
+
+      window.open("https://chatgpt.com/", "_blank");
+    }
+
+    function copyPrompt() {
+      const v = getVals();
+      if (!validate(v)) return;
+      navigator.clipboard.writeText(buildPrompt(v));
+      toast("Prompt copiato negli appunti");
+    }
+  </script>
+
+</body>
+</html>
